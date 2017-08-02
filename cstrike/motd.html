@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+      body {
+        font-family: Verdana, Tahoma;
+        color: #FFB000;
+        background: #000000;
+        margin-left: 8px;
+        margin-top: 0px;
+      }
+
+      .main {
+        text-align: center;
+      }
+      </style>
+
+      <script>
+        function gifReceive(json) {
+          document.getElementById("giphy-image").src = json.data.image_original_url;
+        }
+
+        function loadGiphy() {
+          element = document.createElement('script');
+          element.src = "https://api.giphy.com/v1/gifs/random?api_key=70f0ce6d3371478c95f0e1eea6fdcdda&tag=fail&rating=G&callback=gifReceive";
+          document.head.appendChild(element);
+        }
+
+        document.addEventListener("DOMContentLoaded", loadGiphy);
+      </script>
+  </head>
+  <body>
+    <div class="main">
+      <h3>Welcome!</h3>
+      <img id="giphy-image">
+    </div>
+  </body>
+</html>

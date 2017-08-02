@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+case $1 in
+  start)
+    docker-compose up -d
+    ;;
+
+  stop)
+    docker-compose stop --timeout 1
+    ;;
+
+  logs)
+    extra_args=""
+    if [[ $2 == "-f" ]] || [[ $2 == "--follow" ]]; then
+      extra_args="-f"
+    fi
+
+    # Omit the " hlds_1 | " part
+    docker-compose logs --no-color $extra_args hlds | cut -c 11-
+    ;;
+
+  *)
+    echo "HLDS for CS 1.6"
+    echo ""
+    echo "Usage: $0 <start|stop|logs>"
+    echo "To follow the logs (like tail -f), use '$0 logs -f'"
+    ;;
+esac

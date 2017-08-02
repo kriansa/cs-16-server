@@ -1,0 +1,41 @@
+#!/usr/bin/env sh
+
+bold=$(tput bold)
+normal=$(tput sgr0)
+red=$(tput setaf 1)
+green=$(tput setaf 2)
+yellow=$(tput setaf 3)
+
+function error {
+  echo "${red}ERROR:${normal} $1"
+  exit 1
+}
+
+function success {
+  echo "${green}SUCCESS:${normal} $1"
+}
+
+function info {
+  echo "${yellow}INFO:${normal} $1"
+}
+
+echo "  HLDS CS 1.6 Server Package"
+echo ""
+echo "  Brought to you for free by Kriansa (https://github.com/kriansa)"
+echo "  This is a MIT-licensed software"
+echo ""
+
+if ! docker --version > /dev/null 2>&1; then
+  error "Please, install ${bold}docker${normal} first!"
+fi
+
+info "Building docker image..."
+docker-compose build
+success "Docker image built successfully!"
+
+echo ""
+echo "  Now please, edit the file \
+'${bold}cstrike/addons/amxmodx/configs/users.ini${normal}' and add yourself \
+as an ${yellow}admin${normal}!"
+
+echo "  Run the server using: ${bold}bin/server start${normal}"

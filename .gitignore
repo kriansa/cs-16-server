@@ -1,0 +1,3 @@
+# Ignore log files
+cstrike/addons/amxmodx/logs/*.log
+cstrike/logs/*.log

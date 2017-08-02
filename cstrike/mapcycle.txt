@@ -1,0 +1,10 @@
+; Define the cycle that maps will loop through
+
+fy_pool_day
+aim_ak-colt
+fy_iceworld
+cs_assault
+de_aztec
+de_inferno
+de_dust
+de_dust2

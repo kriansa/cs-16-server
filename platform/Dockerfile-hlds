@@ -1,0 +1,69 @@
+FROM debian:9
+MAINTAINER Daniel Pereira
+
+# Compile-time settings
+ARG TIMEZONE=UTC
+
+# Runtime settings
+ENV PORT=27015
+
+# Set timezone
+RUN ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime && echo $TIMEZONE > /etc/timezone
+
+# Enable non-free repositories
+RUN sed -i 's/main$/main contrib non-free/' /etc/apt/sources.list
+
+# Enable x86 packages
+RUN dpkg --add-architecture i386
+
+# Install steamcmd & less
+RUN echo "steam steam/purge note" | /usr/bin/debconf-set-selections && \
+echo "steamcmd	steam/license	note" | /usr/bin/debconf-set-selections && \
+echo "steamcmd	steam/question	select I AGREE" | /usr/bin/debconf-set-selections
+
+RUN apt-get update && apt-get install -y steamcmd less ca-certificates
+
+# Then clear package list
+RUN rm -rf /var/lib/apt/lists/*
+
+# Create an unprivileged user
+RUN useradd -ms /bin/bash appuser
+
+# Select the unprivilegd user (appuser)
+USER appuser
+ENV HOME /home/appuser
+
+# Copy needed files to their folders
+RUN mkdir $HOME/hlds
+COPY platform/files/ $HOME/hlds
+
+# Change permissions on files added by COPY
+USER root
+RUN chown -R appuser:appuser $HOME/hlds
+USER appuser
+
+# Try to install HLDS. This may take some time.
+# Steam has this bug that they are not very interested in fixing. The
+# workaround is to re-run this routine multiple times until it downloads 100%
+# of the content. More info:
+# https://developer.valvesoftware.com/wiki/SteamCMD#Linux
+# Workaround: https://danielgibbs.co.uk/2013/11/hlds-steamcmd-workaround-appid-90/
+RUN while test "$status" != "Success! App '90' fully installed."; do \
+  status=$(/usr/games/steamcmd +login anonymous \
+  +force_install_dir /home/appuser/hlds +app_update 90 validate +quit | \
+  tail -1); \
+done
+
+# Avoid some warning messages due the lack of this file in the right path
+RUN mkdir -p $HOME/.steam/sdk32/
+RUN ln -s $HOME/hlds/steamclient.so $HOME/.steam/sdk32/steamclient.so
+
+# Set our workdir
+WORKDIR $HOME/hlds
+
+# Create subfolders so we can mount on them
+RUN mkdir $HOME/hlds/cstrike/addons $HOME/hlds/cstrike/cfgs \
+  $HOME/hlds/cstrike/custom_maps
+
+# Default run command
+CMD cp -f cstrike/custom_maps/* cstrike/maps && ./hlds_run -game cstrike -nomaster -port $PORT +ip 0.0.0.0
