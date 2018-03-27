@@ -1,12 +1,10 @@
-version: "3.3"
+version: "3.5"
 
 services:
   hlds:
     build:
       context: .
-      args:
-        TIMEZONE: "${TIMEZONE}"
-      dockerfile: platform/Dockerfile-hlds
+      dockerfile: Dockerfile
     volumes:
       - ./cstrike/addons:/home/appuser/hlds/cstrike/addons
       - ./cstrike/logs:/home/appuser/hlds/cstrike/logs
@@ -15,7 +13,7 @@ services:
       - ./cstrike/mapcycle.txt:/home/appuser/hlds/cstrike/mapcycle.txt:ro
       - ./cstrike/server.cfg:/home/appuser/hlds/cstrike/server.cfg:ro
       - ./cstrike/motd.html:/home/appuser/hlds/cstrike/motd.html:ro
-      - ./cstrike/maps:/home/appuser/hlds/cstrike/custom_maps:ro
+      - ./cstrike/maps:/home/appuser/hlds/cstrike_downloads/maps:ro
     ports:
-      - "${PORT}:${PORT}/udp"
-    env_file: .env
+      - "27015:27015"
+      - "27015:27015/udp"
