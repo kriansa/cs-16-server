@@ -1,3 +1,4 @@
 # Ignore log files
 cstrike/addons/amxmodx/logs/*.log
+cstrike/addons/amxmodx/data/csstats.dat
 cstrike/logs/*.log
